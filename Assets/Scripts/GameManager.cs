@@ -148,19 +148,19 @@ public class GameManager : MonoBehaviour
         var listSmall = GameObject.FindGameObjectsWithTag("Small Ball");
         for (int i = 0; i < listSmall.Length; i++)
         {
-            GameObject.Destroy(listSmall[i]);
+            Destroy(listSmall[i]);
         }
 
         var listBig = GameObject.FindGameObjectsWithTag("Big Ball");
         for (int i = 0; i < listBig.Length; i++)
         {
-            GameObject.Destroy(listBig[i]);
+            Destroy(listBig[i]);
         }
 
         var listNextBall = GameObject.FindGameObjectsWithTag("Next Ball");
         for (int i = 0; i < listNextBall.Length; i++)
         {
-            GameObject.Destroy(listNextBall[i]);
+            Destroy(listNextBall[i]);
         }
 
         score = 0;
@@ -169,6 +169,7 @@ public class GameManager : MonoBehaviour
         GameInit();
         //restart timer
         timer.GetComponent<Timer>().RestartTimer(restartTime);
+        isGameOver = false;
 
         Time.timeScale = 1;
     }
@@ -324,8 +325,8 @@ public class GameManager : MonoBehaviour
                 setting.startColor = new ParticleSystem.MinMaxGradient(controller.GetRGBColor());
                 insParticle.Play();
 
-                GameObject.Destroy(insParticle, 1);
-                GameObject.Destroy(listBan[i]);
+                Destroy(insParticle, 1);
+                Destroy(listBan[i]);
             }
 
             score += listBan.Count;
@@ -378,7 +379,7 @@ public class GameManager : MonoBehaviour
         var oldNextBall = GameObject.FindGameObjectsWithTag("Next Ball");
         foreach (var old in oldNextBall)
         {
-            GameObject.Destroy(old);
+            Destroy(old);
         }
 
         for (int i = 0; i < numberBallAppear; i++)
@@ -460,7 +461,7 @@ public class GameManager : MonoBehaviour
             listBigBall[i].GetComponent<BallController>().isClick = false;
         }
 
-        Debug.Log(listPaleteData[posCol, posRow].BallColor);
+        Debug.Log(listPaleteData[posCol, posRow].BallColor + "," + posCol + posRow);
         if (listPaleteData[posCol, posRow].GetFill() && !isClickingBall)
         {
             startPos = new Vector2(posCol, posRow);
@@ -532,6 +533,19 @@ public class GameManager : MonoBehaviour
         }
 
         isClickingBall = false;
+
+        GameObject small = GameObject.Find("smallBall" + "," + (int)targetPos.x + "," + (int)targetPos.y);
+        if (small)
+        {
+            Destroy(small);
+        }
+        GameObject big = GameObject.Find("ball" + "," + (int)targetPos.x + "," + (int)targetPos.y);
+        if (big)
+        {
+            Destroy(big);
+        }
+        listPaleteData[(int)targetPos.x, (int)targetPos.y].BallColor = ball.GetComponent<BallController>().GetColor();
+
         //setFill at StartPos and TargetPosition
         ball.name = "ball" + "," + (int)targetPos.x + "," + (int)targetPos.y;
         listPaleteData[(int)targetPos.x, (int)targetPos.y].SetFill(true);
@@ -542,12 +556,6 @@ public class GameManager : MonoBehaviour
         ResetPaleteData(listPaleteData[(int)startPos.x, (int)startPos.y]);
 
         //delete if have small ball in target position.
-        GameObject small = GameObject.Find("smallBall" + "," + (int)targetPos.x + "," + (int)targetPos.y);
-        if (small)
-        {
-            GameObject.Destroy(small);
-        }
-        listPaleteData[(int)targetPos.x, (int)targetPos.y].BallColor = ball.GetComponent<BallController>().GetColor();
 
         //recheck ball in palete
         GameObject ballTarget = GameObject.Find("ball" + "," + (int)targetPos.x + "," + (int)targetPos.y);
