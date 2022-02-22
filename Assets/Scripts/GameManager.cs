@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int time;
     [SerializeField] [Range(5, 11)] private int size;
     [SerializeField] [Range(2, 5)] private int numberBallAppear;
+    [SerializeField] [Range(0.1f, 1.0f)] private float smoothBigger;
     public GameObject white;
     public GameObject black;
     [SerializeField] private GameObject ballPrefab;
@@ -128,21 +129,51 @@ public class GameManager : MonoBehaviour
 
         var controller = newBall.GetComponent<BallController>();
         controller.SetColor((BallColor)iColor);
+        controller.SetPos(col, row);
         listPaleteData[col, row].HaveABall = true;
+        listPaleteData[col, row].BallColor = (BallColor)iColor;
 
         if (isSmall)
         {
             newBall.transform.localScale = new Vector3((5.0f / size) / 3.0f, (5.0f / size) / 3.0f, 1);
-            newBall.name = "smallBall" + col + row;
+            newBall.name = "smallBall" + "," + controller.PosCol + "," + controller.PosRow;
+            newBall.gameObject.tag = "Small Ball";
         }
         else
         {
             newBall.transform.localScale = new Vector3(5.0f / size, 5.0f / size, 1);
             listPaleteData[col, row].SetFill(true);
             listPaleteData[col, row].BallColor = (BallColor)iColor;
-            newBall.name = "ball" + col + row;
+            newBall.name = "ball" + "," + controller.PosCol + "," + controller.PosRow;
+            newBall.gameObject.tag = "Big Ball";
         }
     }
+
+    public void OnCompletedTurn()
+    {
+        GameObject[] listSmallBall = GameObject.FindGameObjectsWithTag("Small Ball");
+        for (int i = 0; i < listSmallBall.Length; i++)
+        {
+            BallController ball = listSmallBall[i].GetComponent<BallController>();
+            ball.IsSmall = false;
+            listSmallBall[i].gameObject.tag = "Big Ball";
+            Debug.Log(ball.PosCol + ", " + ball.PosRow);
+            listSmallBall[i].name = "ball" + "," + ball.PosCol + "," + ball.PosRow;
+
+            listPaleteData[ball.PosCol, ball.PosRow].SetFill(true);
+            listPaleteData[ball.PosCol, ball.PosRow].BallColor = ball.GetColor();
+
+            StartCoroutine(BallBecomeBigger(listSmallBall[i]));
+        }
+
+        for (int i = 0; i < numberBallAppear; i++)
+        {
+            CreateBall();
+        }
+
+        //check condition to get point
+    }
+
     public void ResetClickPosition()
     {
         startPos = new Vector2(999, 999);
@@ -200,6 +231,7 @@ public class GameManager : MonoBehaviour
 
     public void ClickAPositon(int posCol, int posRow)
     {
+        Debug.Log(listPaleteData[posCol, posRow].BallColor);
         if (listPaleteData[posCol, posRow].GetFill() && !isClickingBall)
         {
             startPos = new Vector2(posCol, posRow);
@@ -229,7 +261,7 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                GameObject ball = GameObject.Find("ball" + (int)startPos.x + (int)startPos.y);
+                GameObject ball = GameObject.Find("ball" + "," + (int)startPos.x + "," + (int)startPos.y);
                 Debug.Log(ball);
 
                 // for (int i = 0; i < route.pathRoute.Count; i++)
@@ -245,16 +277,27 @@ public class GameManager : MonoBehaviour
 
                 isClickingBall = false;
                 //setFill at StartPos and TargetPosition
-                ball.name = "ball" + (int)targetPos.x + (int)targetPos.y;
+                ball.name = "ball" + "," + (int)targetPos.x + "," + (int)targetPos.y;
                 listPaleteData[(int)targetPos.x, (int)targetPos.y].SetFill(true);
+                listPaleteData[(int)targetPos.x, (int)targetPos.y].BallColor =
+                    ball.GetComponent<BallController>().GetColor();
+
+                listPaleteData[(int)startPos.x, (int)startPos.y].BallColor = BallColor.NO_COLOR;
                 ResetPaleteData(listPaleteData[(int)startPos.x, (int)startPos.y]);
             }
+            OnCompletedTurn();
         }
     }
 
-    private IEnumerator MovingBallNextPalete()
+    private IEnumerator BallBecomeBigger(GameObject ball)
     {
-        yield return null;
+        ball.GetComponent<BallController>();
+        while (ball.transform.localScale.x < 5.0f / size)
+        {
+            ball.transform.localScale =
+                Vector2.Lerp(ball.transform.localScale, new Vector3(5.0f / size, 5.0f / size, 1), smoothBigger);
+            yield return null;
+        }
     }
     private IEnumerator MovingBall(List<Vector2> list, GameObject ball)
     {
@@ -271,7 +314,7 @@ public class GameManager : MonoBehaviour
 
 
         //delete if have small ball in target position.
-        GameObject small = GameObject.Find("smallBall" + (int)targetPos.x + (int)targetPos.y);
+        GameObject small = GameObject.Find("smallBall" + "," + (int)targetPos.x + "," + (int)targetPos.y);
         if (small)
         {
             GameObject.Destroy(small);

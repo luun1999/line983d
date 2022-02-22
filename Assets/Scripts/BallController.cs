@@ -24,6 +24,10 @@ public class BallController : MonoBehaviour
     {
         color = c;
     }
+    public BallColor GetColor()
+    {
+        return color;
+    }
 
     public void UpdateColor()
     {
@@ -54,12 +58,16 @@ public class BallController : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         posCol = 0;
         posRow = 0;
         isSmall = true;
         sprite = GetComponent<SpriteRenderer>();
+    }
+
+    void Start()
+    {
         UpdateColor();
     }
 

@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - PlayArea
+  - Small Ball
   layers:
   - Default
   - TransparentFX

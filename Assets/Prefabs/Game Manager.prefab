@@ -46,6 +46,7 @@ MonoBehaviour:
   time: 0
   size: 9
   numberBallAppear: 4
+  smoothBigger: 0.2
   white: {fileID: 8487381653678900249, guid: 5c6f4d4f6ab834e4a843c35f86d784d9, type: 3}
   black: {fileID: 37721008068955598, guid: 5b356141394a45147b0067d297df7ff3, type: 3}
   ballPrefab: {fileID: 8678521761634660751, guid: daef2f8a409f58c4c9682e4eed90b3e6, type: 3}
