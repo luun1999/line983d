@@ -19,6 +19,7 @@ namespace PaleteDataNS
             this.posRow = 0;
             this.isFill = false;
             this.haveABall = false;
+            this.ballColor = BallColor.NO_COLOR;
         }
         public PaleteData(int posCol, int posRow)
         {
@@ -26,6 +27,7 @@ namespace PaleteDataNS
             this.posCol = posCol;
             this.isFill = false;
             this.haveABall = false;
+            this.ballColor = BallColor.NO_COLOR;
         }
 
         public void SetPos(int col, int row)

@@ -8,6 +8,8 @@ public class BallController : MonoBehaviour
     private int posCol;
     private int posRow;
     private SpriteRenderer sprite;
+    public Animator anim;
+    public bool isClick = false;
     [SerializeField] private bool isSmall;
     [SerializeField] private BallColor color;
     public int PosCol { get => posCol; set => posCol = value; }
@@ -27,6 +29,27 @@ public class BallController : MonoBehaviour
     public BallColor GetColor()
     {
         return color;
+    }
+
+    public Color GetRGBColor()
+    {
+        switch (color)
+        {
+            case BallColor.RED:
+                return Color.red;
+            case BallColor.GREEN:
+                return Color.green;
+            case BallColor.BLUE:
+                return Color.blue;
+            case BallColor.CYAN:
+                return Color.cyan;
+            case BallColor.MAGENTA:
+                return Color.magenta;
+            case BallColor.YELLOW:
+                return Color.yellow;
+            default:
+                return Color.white;
+        }
     }
 
     public void UpdateColor()
@@ -64,6 +87,7 @@ public class BallController : MonoBehaviour
         posRow = 0;
         isSmall = true;
         sprite = GetComponent<SpriteRenderer>();
+        anim = GetComponent<Animator>();
     }
 
     void Start()
@@ -74,5 +98,6 @@ public class BallController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        anim.SetBool("isClick", isClick);
     }
 }

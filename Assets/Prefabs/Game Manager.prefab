@@ -45,8 +45,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   time: 0
   size: 9
+  sizeBump: 3
   numberBallAppear: 4
   smoothBigger: 0.2
+  timer: {fileID: 309589945306697371, guid: d305158e32d7fc2479d8237f22932478, type: 3}
+  particle: {fileID: 7214444051728036817, guid: 80636572933367e459f3914f00f2aa04, type: 3}
+  restartTime: 10
   white: {fileID: 8487381653678900249, guid: 5c6f4d4f6ab834e4a843c35f86d784d9, type: 3}
   black: {fileID: 37721008068955598, guid: 5b356141394a45147b0067d297df7ff3, type: 3}
   ballPrefab: {fileID: 8678521761634660751, guid: daef2f8a409f58c4c9682e4eed90b3e6, type: 3}

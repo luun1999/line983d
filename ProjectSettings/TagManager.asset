@@ -6,6 +6,8 @@ TagManager:
   tags:
   - PlayArea
   - Small Ball
+  - Big Ball
+  - Next Ball
   layers:
   - Default
   - TransparentFX
@@ -14,7 +16,7 @@ TagManager:
   - Water
   - UI
   - Playerble
-  - 
+  - Game Over
   - 
   - 
   - 
@@ -42,4 +44,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Game Over
+    uniqueID: 1492581151
     locked: 0
