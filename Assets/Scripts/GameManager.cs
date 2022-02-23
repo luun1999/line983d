@@ -289,12 +289,12 @@ public class GameManager : MonoBehaviour
             listTemp.RemoveRange(0, listTemp.Count);
 
             col = ballController.PosCol - 1;
-            row = ballController.PosRow - 1;
+            row = ballController.PosRow + 1;
             while ((col >= 0 && col < size) && (row >= 0 && row < size))
             {
                 if (!CheckNextBall(ballController, ref listTemp, col, row)) break;
                 col--;
-                row--;
+                row++;
             }
             if (listTemp.Count < sizeBump - 1) listTemp.RemoveRange(0, listTemp.Count);
             else
@@ -343,10 +343,11 @@ public class GameManager : MonoBehaviour
         else
         {
             var nextBall = GameObject.Find("ball" + "," + col + "," + row);
+            Debug.Log(row + "," + col + "|" + nextBall.GetComponent<BallController>().PosCol + nextBall.GetComponent<BallController>().PosRow);
             if (!nextBall) return false;
             else
             {
-                if (ballController.GetColor() != nextBall.GetComponent<BallController>().GetColor())
+                if (ballController.GetColor() != listPaleteData[col, row].BallColor)
                 {
                     Debug.Log(false);
                     return false;
@@ -467,6 +468,13 @@ public class GameManager : MonoBehaviour
             startPos = new Vector2(posCol, posRow);
             isClickingBall = true;
             var bigBall = GameObject.Find("ball" + "," + posCol + "," + posRow);
+
+            if (!bigBall)
+            {
+                ResetPaleteData(listPaleteData[posCol, posRow]);
+                isClickingBall = false;
+                return;
+            }
             bigBall.GetComponent<BallController>().isClick = true;
             Debug.Log("Click Start Pos: " + startPos);
         }
@@ -474,6 +482,31 @@ public class GameManager : MonoBehaviour
         {
             startPos = new Vector2(posCol, posRow);
             var bigBall = GameObject.Find("ball" + "," + posCol + "," + posRow);
+
+            //hot fix :((
+            if (!bigBall)
+            {
+                ResetPaleteData(listPaleteData[posCol, posRow]);
+                isClickingBall = false;
+                targetPos = new Vector2(posCol, posRow);
+
+                route = FindPath(listPaleteData, startPos, targetPos);
+                if (!route.isCorrect)
+                {
+                    return;
+                }
+                else
+                {
+                    GameObject ball = GameObject.Find("ball" + "," + (int)startPos.x + "," + (int)startPos.y);
+                    Debug.Log(ball);
+                    StartCoroutine(MovingBall(route.pathRoute, ball));
+
+                }
+                timer.GetComponent<Timer>().RestartTimer(restartTime);
+                OnCompletedTurn();
+                return;
+            }
+
             bigBall.GetComponent<BallController>().isClick = true;
             Debug.Log("Filled and isWaiting: " + "new POS" + startPos);
             return;
@@ -548,6 +581,7 @@ public class GameManager : MonoBehaviour
 
         //setFill at StartPos and TargetPosition
         ball.name = "ball" + "," + (int)targetPos.x + "," + (int)targetPos.y;
+        ball.GetComponent<BallController>().SetPos((int)targetPos.x, (int)targetPos.y);
         listPaleteData[(int)targetPos.x, (int)targetPos.y].SetFill(true);
         listPaleteData[(int)targetPos.x, (int)targetPos.y].BallColor =
             ball.GetComponent<BallController>().GetColor();
